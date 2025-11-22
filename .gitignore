@@ -1,14 +1,29 @@
 *
+
+!*/
+
 !*.html
+!*.htm
 !*.css
 !*.js
 !*.ts
-!.gif
-!.jpg
-!.png
-!.webp
-!.svg
-!.bmp
-!.htm
+!*.gif
+!*.jpg
+!*.jpeg
+!*.png
+!*.webp
+!*.svg
+!*.bmp
+!*.md
+!.gitignore
+!LICENSE
+!CNAME
+!*.ico
+!*.json
+!*.xml
+!*.webmanifest
+!robots.txt
+!*.nojekyll
+!*.txt
 
 # should block everything but files required for putting a website up. make an issue if you'd like this changed
