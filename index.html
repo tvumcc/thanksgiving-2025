@@ -18,6 +18,9 @@
         --ink: #0f1419;
         --cream: #f5f2eb;
         --mist: #9ca3af;
+        --fragment-hue: 0;
+        --crossroads-choice: 0; /* wildcard: Crossroads - tracks user's path */
+        --visit-depth: 0; /* wildcard: Chronicle - how deep they've gone */
       }
       
       * { box-sizing: border-box; }
@@ -83,12 +86,15 @@
         animation: pulse 10s ease-in-out infinite;
       }
       
-      /* theme cards */
+      /* theme cards base */
       .theme-card {
         background: linear-gradient(135deg, rgba(212,165,55,0.08) 0%, rgba(147,197,253,0.04) 100%);
         border: 1px solid rgba(212,165,55,0.2);
         backdrop-filter: blur(10px);
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
       }
       
       .theme-card:hover {
@@ -114,10 +120,693 @@
       ::-webkit-scrollbar { width: 8px; }
       ::-webkit-scrollbar-track { background: var(--ink); }
       ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+      
+      /* FRAGMENTS theme - shattered, pixelated, broken into pieces */
+      .theme-fragments {
+        position: relative;
+      }
+      .theme-fragments::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: 
+          linear-gradient(45deg, transparent 49%, rgba(212,165,55,0.1) 49%, rgba(212,165,55,0.1) 51%, transparent 51%),
+          linear-gradient(-45deg, transparent 49%, rgba(212,165,55,0.05) 49%, rgba(212,165,55,0.05) 51%, transparent 51%);
+        background-size: 20px 20px;
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .theme-fragments:hover::before {
+        opacity: 1;
+      }
+      .theme-fragments .fragment-pieces {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .theme-fragments .fragment-piece {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: var(--gold);
+        opacity: 0;
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .theme-fragments:hover .fragment-piece {
+        opacity: 0.6;
+      }
+      .theme-fragments:hover .fragment-piece:nth-child(1) { transform: translate(10px, 20px) rotate(45deg); }
+      .theme-fragments:hover .fragment-piece:nth-child(2) { transform: translate(80px, 60px) rotate(-30deg); }
+      .theme-fragments:hover .fragment-piece:nth-child(3) { transform: translate(50px, 90px) rotate(60deg); }
+      .theme-fragments:hover .fragment-piece:nth-child(4) { transform: translate(120px, 30px) rotate(-15deg); }
+      .theme-fragments:hover .fragment-piece:nth-child(5) { transform: translate(90px, 110px) rotate(90deg); }
+      .theme-fragments .theme-title {
+        position: relative;
+      }
+      .theme-fragments:hover .theme-title {
+        animation: glitch 0.4s ease-in-out;
+      }
+      @keyframes glitch {
+        0%, 100% { transform: translate(0); filter: none; }
+        20% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
+        40% { transform: translate(3px, -2px); filter: hue-rotate(-90deg); }
+        60% { transform: translate(-2px, -2px); }
+        80% { transform: translate(2px, 2px); filter: hue-rotate(45deg); }
+      }
+      .fragment-char {
+        display: inline-block;
+        transition: all 0.3s ease;
+      }
+      .theme-fragments:hover .fragment-char {
+        animation: fragment-scatter 0.5s ease forwards;
+        animation-delay: calc(var(--char-index) * 0.03s);
+      }
+      @keyframes fragment-scatter {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+        50% { transform: translate(calc(var(--scatter-x, 0) * 1px), calc(var(--scatter-y, 0) * 1px)) rotate(calc(var(--scatter-r, 0) * 1deg)); opacity: 0.7; }
+      }
+      
+      /* THREADS theme - connected, woven, interlinked */
+      .theme-threads {
+        position: relative;
+      }
+      .theme-threads::before,
+      .theme-threads::after {
+        content: '';
+        position: absolute;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        height: 1px;
+        width: 0;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .theme-threads::before {
+        top: 30%;
+        left: -10%;
+        transition-delay: 0s;
+      }
+      .theme-threads::after {
+        bottom: 35%;
+        right: -10%;
+        transition-delay: 0.1s;
+      }
+      .theme-threads:hover::before,
+      .theme-threads:hover::after {
+        width: 120%;
+      }
+      .thread-lines {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .thread-line {
+        position: absolute;
+        height: 1px;
+        background: linear-gradient(90deg, transparent 0%, var(--gold-light) 50%, transparent 100%);
+        opacity: 0;
+        transform: scaleX(0);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .theme-threads:hover .thread-line {
+        opacity: 0.4;
+        transform: scaleX(1);
+      }
+      .thread-line:nth-child(1) { top: 20%; left: 0; width: 60%; transition-delay: 0.1s; }
+      .thread-line:nth-child(2) { top: 40%; right: 0; width: 80%; transition-delay: 0.2s; }
+      .thread-line:nth-child(3) { top: 60%; left: 10%; width: 50%; transition-delay: 0.3s; }
+      .thread-line:nth-child(4) { top: 80%; right: 5%; width: 70%; transition-delay: 0.4s; }
+      .theme-threads .theme-title {
+        position: relative;
+      }
+      .theme-threads:hover .theme-title::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 200%;
+        height: 200%;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(ellipse at center, transparent 30%, rgba(212,165,55,0.1) 50%, transparent 70%);
+        animation: thread-pulse 1.5s ease-in-out infinite;
+      }
+      @keyframes thread-pulse {
+        0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+        50% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      }
+      
+      /* SHIFTS theme - morphing, transforming, state changes */
+      .theme-shifts {
+        position: relative;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .theme-shifts::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(212,165,55,0.1) 0%, transparent 50%, rgba(147,197,253,0.1) 100%);
+        opacity: 0;
+        transition: opacity 0.5s, transform 0.5s;
+      }
+      .theme-shifts:hover::before {
+        opacity: 1;
+        transform: rotate(180deg);
+      }
+      .theme-shifts .theme-title {
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-block;
+      }
+      .theme-shifts:hover .theme-title {
+        letter-spacing: 0.2em;
+        transform: skewX(-5deg) scale(1.05);
+        background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 200% 100%;
+        animation: shift-gradient 2s ease infinite;
+      }
+      @keyframes shift-gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      .shift-morph {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .shift-shape {
+        position: absolute;
+        border: 1px solid var(--gold);
+        opacity: 0;
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .theme-shifts:hover .shift-shape {
+        opacity: 0.3;
+      }
+      .shift-shape:nth-child(1) {
+        width: 30px; height: 30px; top: 10%; right: 10%;
+        border-radius: 0;
+      }
+      .theme-shifts:hover .shift-shape:nth-child(1) {
+        border-radius: 50%;
+        transform: rotate(45deg) scale(1.2);
+      }
+      .shift-shape:nth-child(2) {
+        width: 20px; height: 20px; bottom: 20%; left: 15%;
+        border-radius: 50%;
+      }
+      .theme-shifts:hover .shift-shape:nth-child(2) {
+        border-radius: 0;
+        transform: rotate(-45deg) scale(1.3);
+      }
+      
+      /* ECHOES theme - repetition, decay, reverberations */
+      .theme-echoes {
+        position: relative;
+      }
+      .theme-echoes .theme-title {
+        position: relative;
+        z-index: 1;
+      }
+      .echo-ghost {
+        position: absolute;
+        font-family: 'Unbounded', sans-serif;
+        font-weight: bold;
+        font-size: 1.875rem;
+        color: var(--gold);
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+      }
+      .theme-echoes:hover .echo-ghost {
+        opacity: 1;
+      }
+      .echo-ghost:nth-child(1) {
+        transform: translate(-4px, -4px);
+        opacity: 0;
+        filter: blur(1px);
+      }
+      .theme-echoes:hover .echo-ghost:nth-child(1) {
+        transform: translate(-8px, -8px);
+        opacity: 0.3;
+        animation: echo-fade 1.5s ease-out infinite;
+      }
+      .echo-ghost:nth-child(2) {
+        transform: translate(-8px, -8px);
+        filter: blur(2px);
+      }
+      .theme-echoes:hover .echo-ghost:nth-child(2) {
+        transform: translate(-16px, -16px);
+        opacity: 0.15;
+        animation: echo-fade 1.5s ease-out 0.2s infinite;
+      }
+      .echo-ghost:nth-child(3) {
+        transform: translate(-12px, -12px);
+        filter: blur(3px);
+      }
+      .theme-echoes:hover .echo-ghost:nth-child(3) {
+        transform: translate(-24px, -24px);
+        opacity: 0.08;
+        animation: echo-fade 1.5s ease-out 0.4s infinite;
+      }
+      @keyframes echo-fade {
+        0%, 100% { opacity: var(--echo-opacity, 0.3); }
+        50% { opacity: calc(var(--echo-opacity, 0.3) * 0.5); }
+      }
+      .echo-ripple {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .echo-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: 1px solid var(--gold);
+        border-radius: 50%;
+        opacity: 0;
+      }
+      .theme-echoes:hover .echo-ring {
+        animation: echo-ripple 2s ease-out infinite;
+      }
+      .echo-ring:nth-child(1) { animation-delay: 0s; }
+      .echo-ring:nth-child(2) { animation-delay: 0.4s; }
+      .echo-ring:nth-child(3) { animation-delay: 0.8s; }
+      @keyframes echo-ripple {
+        0% { width: 20px; height: 20px; opacity: 0.6; }
+        100% { width: 200px; height: 200px; opacity: 0; }
+      }
+      
+      /* wildcard mini cards */
+      .wildcard-mini {
+        background: linear-gradient(135deg, rgba(147,197,253,0.06) 0%, rgba(212,165,55,0.02) 100%);
+        border: 1px solid rgba(147,197,253,0.15);
+        backdrop-filter: blur(8px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .wildcard-mini:hover {
+        border-color: var(--sky);
+        box-shadow: 0 0 20px rgba(147,197,253,0.12);
+        transform: translateY(-2px);
+      }
+      .wildcard-mini:hover .wildcard-name {
+        color: var(--sky-light);
+      }
+      
+      /* theme description reveal */
+      .theme-description {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .theme-card.expanded .theme-description {
+        max-height: 200px;
+        opacity: 1;
+        margin-top: 1rem;
+      }
+      
+      /* chronicle trail - records user interactions (wildcard: Chronicle) */
+      .chronicle-entry {
+        animation: chronicle-appear 0.5s ease-out forwards;
+      }
+      @keyframes chronicle-appear {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      
+      /* schrödinger states (wildcard: Schrödinger) */
+      .schrodinger-box {
+        position: relative;
+      }
+      .schrodinger-box::after {
+        content: '?';
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--gold);
+        background: rgba(15, 20, 25, 0.9);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .schrodinger-box.uncertain::after {
+        opacity: 1;
+      }
+      
+      /* randomized elements (wildcard: Randomness) */
+      .random-accent {
+        transition: all 0.3s ease;
+      }
+      
+      /* sleeper agent easter egg (wildcard: Sleeper Agent) */
+      .sleeper-trigger {
+        cursor: default;
+      }
+      .sleeper-revealed {
+        animation: sleeper-wake 1s ease-out forwards;
+      }
+      @keyframes sleeper-wake {
+        0% { filter: blur(10px); opacity: 0; }
+        100% { filter: blur(0); opacity: 1; }
+      }
+      
+      /* goldberg cascade effect (wildcard: Goldberg) */
+      .cascade-trigger:active ~ .cascade-effect-1 {
+        animation: cascade-1 0.3s ease-out forwards;
+      }
+      @keyframes cascade-1 {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+      }
+      
+      /* time capsule indicator */
+      .time-capsule-badge {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        padding: 8px 16px;
+        background: rgba(212, 165, 55, 0.1);
+        border: 1px solid rgba(212, 165, 55, 0.3);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        color: var(--gold);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease;
+        z-index: 100;
+      }
+      .time-capsule-badge.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* deja vu flash */
+      .deja-vu-flash {
+        position: fixed;
+        inset: 0;
+        background: rgba(212, 165, 55, 0.1);
+        pointer-events: none;
+        opacity: 0;
+        z-index: 999;
+      }
+      .deja-vu-flash.active {
+        animation: deja-flash 0.5s ease-out;
+      }
+      @keyframes deja-flash {
+        0% { opacity: 0.4; }
+        100% { opacity: 0; }
+      }
+      
+      /* foreshadow hint */
+      .foreshadow {
+        position: relative;
+      }
+      .foreshadow::after {
+        content: attr(data-foreshadow);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 4px 8px;
+        background: var(--ink);
+        border: 1px solid var(--gold);
+        border-radius: 4px;
+        font-size: 0.6rem;
+        color: var(--gold);
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .foreshadow:hover::after {
+        opacity: 0.7;
+      }
+      
+      /* kaleidoscope context shift */
+      @media (prefers-color-scheme: light) {
+        .kaleidoscope-text::after {
+          content: ' (day mode)';
+          font-size: 0.7em;
+          opacity: 0.5;
+        }
+      }
+      
+      /* WILDCARD: Schrödinger - quantum uncertainty states */
+      .schrodinger-element {
+        position: relative;
+        cursor: pointer;
+      }
+      .schrodinger-element::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        background: linear-gradient(45deg, var(--gold), var(--sky), var(--gold));
+        background-size: 400% 400%;
+        border-radius: inherit;
+        opacity: 0;
+        z-index: -1;
+        animation: quantum-shimmer 3s ease infinite;
+        transition: opacity 0.3s;
+      }
+      .schrodinger-element.uncertain::before {
+        opacity: 0.6;
+      }
+      .schrodinger-element .quantum-state {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 20, 25, 0.95);
+        backdrop-filter: blur(8px);
+        border-radius: inherit;
+        font-family: 'Unbounded', sans-serif;
+        font-weight: bold;
+        color: var(--gold);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .schrodinger-element.uncertain .quantum-state {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      @keyframes quantum-shimmer {
+        0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+        50% { background-position: 100% 50%; filter: hue-rotate(30deg); }
+      }
+      .schrodinger-element.collapsed .quantum-state {
+        animation: collapse 0.5s ease-out forwards;
+      }
+      @keyframes collapse {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.1); }
+        100% { opacity: 0; transform: scale(0.8); }
+      }
+      
+      /* WILDCARD: Crossroads - meaningful choice indicator */
+      .crossroads-choice {
+        position: relative;
+        overflow: visible;
+      }
+      .crossroads-choice::after {
+        content: '↔';
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        font-size: 0.7rem;
+        color: var(--sky);
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s;
+      }
+      .crossroads-choice:hover::after {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+      .crossroads-indicator {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        background: rgba(147, 197, 253, 0.1);
+        border: 1px solid rgba(147, 197, 253, 0.3);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        color: var(--sky);
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.5s ease;
+        z-index: 100;
+      }
+      .crossroads-indicator.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* WILDCARD: L100 - dual meaning indicator */
+      .l100-element {
+        position: relative;
+        cursor: help;
+      }
+      .l100-element .meaning-1,
+      .l100-element .meaning-2 {
+        transition: all 0.4s ease;
+      }
+      .l100-element .meaning-2 {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .l100-element:hover .meaning-1 {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      .l100-element:hover .meaning-2 {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* WILDCARD: Patchwork - unified feature from different pieces */
+      .patchwork-container {
+        position: relative;
+      }
+      .patchwork-piece {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .patchwork-container:hover .patchwork-piece {
+        transform: scale(0.95);
+        opacity: 0.7;
+      }
+      .patchwork-container:hover .patchwork-unified {
+        opacity: 1;
+        transform: scale(1);
+      }
+      .patchwork-unified {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(212,165,55,0.15), rgba(147,197,253,0.15));
+        border: 1px solid rgba(212, 165, 55, 0.4);
+        border-radius: 1rem;
+        opacity: 0;
+        transform: scale(0.9);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        backdrop-filter: blur(8px);
+      }
+      
+      /* enhanced theme hover glow effects */
+      .theme-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        opacity: 0;
+        transition: opacity 0.4s;
+        pointer-events: none;
+      }
+      .theme-fragments::after {
+        background: radial-gradient(circle at 30% 70%, rgba(212,165,55,0.2) 0%, transparent 50%);
+      }
+      .theme-threads::after {
+        background: linear-gradient(90deg, transparent, rgba(212,165,55,0.1), transparent);
+      }
+      .theme-shifts::after {
+        background: conic-gradient(from 0deg, transparent, rgba(212,165,55,0.15), transparent, rgba(147,197,253,0.15), transparent);
+      }
+      .theme-echoes::after {
+        background: radial-gradient(circle at center, rgba(212,165,55,0.15) 0%, transparent 60%);
+      }
+      .theme-card:hover::after {
+        opacity: 1;
+      }
+      
+      /* chronicle trail visual */
+      .chronicle-trail {
+        position: fixed;
+        bottom: 60px;
+        left: 20px;
+        max-width: 200px;
+        max-height: 150px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: all 0.5s ease;
+        z-index: 99;
+        pointer-events: none;
+      }
+      .chronicle-trail.visible {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: auto;
+      }
+      .chronicle-trail-item {
+        font-size: 0.6rem;
+        color: var(--mist);
+        padding: 2px 0;
+        opacity: 0.5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .chronicle-trail-item:last-child {
+        opacity: 1;
+        color: var(--gold);
+      }
+      
+      /* foreshadow enhanced - cryptic hints */
+      .foreshadow-cryptic {
+        position: relative;
+      }
+      .foreshadow-cryptic::before {
+        content: attr(data-cryptic);
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%) translateY(5px);
+        font-size: 0.5rem;
+        color: var(--gold);
+        opacity: 0;
+        letter-spacing: 0.3em;
+        white-space: nowrap;
+        transition: all 0.5s ease;
+        filter: blur(2px);
+      }
+      .foreshadow-cryptic:hover::before {
+        opacity: 0.4;
+        filter: blur(0);
+        transform: translateX(-50%) translateY(10px);
+      }
     </style>
   </head>
   
   <body class="grain">
+    <!-- deja vu flash overlay (wildcard: Déjà Vu) -->
+    <div id="deja-vu-flash" class="deja-vu-flash"></div>
+    
+    
+    <!-- crossroads indicator (wildcard: Crossroads) -->
+    <div id="crossroads-indicator" class="crossroads-indicator">
+      <span id="crossroads-text">🚦 Path chosen: <span id="path-name">exploring</span></span>
+    </div>
+    
+    
     <!-- ambient blobs -->
     <div class="blob w-64 h-64 sm:w-96 sm:h-96 bg-[#D4A537] top-20 -left-32 sm:-left-48" style="position: fixed;"></div>
     <div class="blob w-48 h-48 sm:w-80 sm:h-80 bg-[#93C5FD] bottom-20 -right-24 sm:-right-40" style="position: fixed;"></div>
@@ -139,14 +828,16 @@
         
         <p class="text-lg sm:text-xl md:text-2xl text-[#9ca3af] max-w-2xl mx-auto leading-relaxed mb-10 md:mb-12">
           A week to build something you're proud of.<br>
-          <span class="text-[#f5f2eb]">Anything goes. Seriously.</span>
+          <span class="text-[#f5f2eb] kaleidoscope-text" id="kaleidoscope-anything">Anything goes. Seriously.</span>
         </p>
         
+        <!-- wildcard: Crossroads - meaningful choice that changes the experience -->
         <div class="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
-          <a href="#themes" class="px-5 py-3 bg-[#D4A537] text-[#0f1419] hover:bg-[#F5C542] transition-colors rounded-lg text-sm font-bold uppercase tracking-wide">
+          <a href="#themes" class="px-5 py-3 bg-[#D4A537] text-[#0f1419] hover:bg-[#F5C542] transition-colors rounded-lg text-sm font-bold uppercase tracking-wide cascade-trigger crossroads-choice" onclick="choosePath('themes', event)">
             Themes
           </a>
-          <a href="#wildcards" class="px-5 py-3 bg-[#93C5FD] text-[#0f1419] hover:bg-[#BFDBFE] transition-colors rounded-lg text-sm font-bold uppercase tracking-wide">
+          <span class="text-[#9ca3af] text-xs hidden sm:inline foreshadow-cryptic" data-cryptic="or both?">or</span>
+          <a href="#wildcards" class="px-5 py-3 bg-[#93C5FD] text-[#0f1419] hover:bg-[#BFDBFE] transition-colors rounded-lg text-sm font-bold uppercase tracking-wide crossroads-choice" onclick="choosePath('wildcards', event)">
             Wildcards
           </a>
           <a href="#submit" class="px-5 py-3 border border-[#f5f2eb]/30 text-[#f5f2eb] hover:bg-[#f5f2eb]/10 transition-colors rounded-lg text-sm font-medium">
@@ -155,11 +846,6 @@
         </div>
       </div>
       
-      <!-- scroll indicator - hidden on mobile -->
-      <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-[#9ca3af] hidden sm:flex">
-        <span class="text-xs uppercase tracking-widest">Scroll</span>
-        <div class="w-px h-16 bg-gradient-to-b from-[#9ca3af] to-transparent"></div>
-      </div>
     </section>
     
     <!-- countdown section -->
@@ -194,37 +880,6 @@
         <p class="text-[#9ca3af] text-sm">Extensions may be granted depending on the number of submissions.</p>
       </div>
     </section>
-    
-    <script>
-      // Countdown timer
-      const deadline = new Date('December 3, 2025 23:59:59').getTime();
-      
-      function updateCountdown() {
-        const now = new Date().getTime();
-        const distance = deadline - now;
-        
-        if (distance < 0) {
-          document.getElementById('days').textContent = '0';
-          document.getElementById('hours').textContent = '0';
-          document.getElementById('minutes').textContent = '0';
-          document.getElementById('seconds').textContent = '0';
-          return;
-        }
-        
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
-        document.getElementById('days').textContent = days;
-        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-      }
-      
-      updateCountdown();
-      setInterval(updateCountdown, 1000);
-    </script>
     
     <!-- about section -->
     <section id="about" class="py-20 md:py-32 px-6 relative border-t border-[#f5f2eb]/5">
@@ -278,31 +933,88 @@
           </p>
         </div>
         
-        <!-- theme cards grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <div class="theme-card p-6 sm:p-8 rounded-2xl">
+        <!-- theme cards grid - 2x2 layout -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6" id="themes-grid">
+          
+          <!-- FRAGMENTS -->
+          <div class="theme-card theme-fragments p-6 sm:p-8 rounded-2xl" data-theme="fragments">
+            <div class="fragment-pieces">
+              <div class="fragment-piece" style="top: 10%; left: 20%;"></div>
+              <div class="fragment-piece" style="top: 30%; left: 60%;"></div>
+              <div class="fragment-piece" style="top: 50%; left: 30%;"></div>
+              <div class="fragment-piece" style="top: 70%; left: 80%;"></div>
+              <div class="fragment-piece" style="top: 85%; left: 45%;"></div>
+            </div>
             <span class="text-xs text-[#D4A537] uppercase tracking-widest mb-3 sm:mb-4 block">Theme 01</span>
-            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <h3 class="theme-title font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb] whitespace-nowrap">
+              <span class="fragment-char" style="--char-index: 0; --scatter-x: -5; --scatter-y: -8; --scatter-r: -15;">F</span><span class="fragment-char" style="--char-index: 1; --scatter-x: 3; --scatter-y: -12; --scatter-r: 10;">R</span><span class="fragment-char" style="--char-index: 2; --scatter-x: -8; --scatter-y: 5; --scatter-r: -8;">A</span><span class="fragment-char" style="--char-index: 3; --scatter-x: 6; --scatter-y: -4; --scatter-r: 12;">G</span><span class="fragment-char" style="--char-index: 4; --scatter-x: -4; --scatter-y: 10; --scatter-r: -20;">M</span><span class="fragment-char" style="--char-index: 5; --scatter-x: 10; --scatter-y: 3; --scatter-r: 5;">E</span><span class="fragment-char" style="--char-index: 6; --scatter-x: -6; --scatter-y: -6; --scatter-r: 15;">N</span><span class="fragment-char" style="--char-index: 7; --scatter-x: 4; --scatter-y: 8; --scatter-r: -12;">T</span><span class="fragment-char" style="--char-index: 8; --scatter-x: -3; --scatter-y: -10; --scatter-r: 8;">S</span>
+            </h3>
             <div class="mt-4 sm:mt-6 h-px bg-gradient-to-r from-[#D4A537]/40 to-transparent"></div>
+            <div class="mt-4">
+              <span class="text-[10px] text-[#9ca3af]/60 uppercase tracking-[0.2em] block mb-2">dictionary definition</span>
+              <p class="text-[#9ca3af] text-sm leading-relaxed italic">
+                /ˈfraɡmənt/ <span class="not-italic text-[#f5f2eb]">noun</span> — a small part broken off or separated from something; an isolated or incomplete part.
+              </p>
+            </div>
           </div>
           
-          <div class="theme-card p-6 sm:p-8 rounded-2xl">
+          <!-- THREADS -->
+          <div class="theme-card theme-threads p-6 sm:p-8 rounded-2xl" data-theme="threads">
+            <div class="thread-lines">
+              <div class="thread-line"></div>
+              <div class="thread-line"></div>
+              <div class="thread-line"></div>
+              <div class="thread-line"></div>
+            </div>
             <span class="text-xs text-[#D4A537] uppercase tracking-widest mb-3 sm:mb-4 block">Theme 02</span>
-            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <h3 class="theme-title font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">THREADS</h3>
             <div class="mt-4 sm:mt-6 h-px bg-gradient-to-r from-[#D4A537]/40 to-transparent"></div>
+            <div class="mt-4">
+              <span class="text-[10px] text-[#9ca3af]/60 uppercase tracking-[0.2em] block mb-2">dictionary definition</span>
+              <p class="text-[#9ca3af] text-sm leading-relaxed italic">
+                /θred/ <span class="not-italic text-[#f5f2eb]">noun</span> — a long thin strand of cotton, nylon, or other fibers; a theme or characteristic running throughout a situation or piece of writing.
+              </p>
+            </div>
           </div>
           
-          <div class="theme-card p-6 sm:p-8 rounded-2xl">
+          <!-- SHIFTS -->
+          <div class="theme-card theme-shifts p-6 sm:p-8 rounded-2xl" data-theme="shifts">
+            <div class="shift-morph">
+              <div class="shift-shape"></div>
+              <div class="shift-shape"></div>
+            </div>
             <span class="text-xs text-[#D4A537] uppercase tracking-widest mb-3 sm:mb-4 block">Theme 03</span>
-            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <h3 class="theme-title font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">SHIFTS</h3>
             <div class="mt-4 sm:mt-6 h-px bg-gradient-to-r from-[#D4A537]/40 to-transparent"></div>
+            <div class="mt-4">
+              <span class="text-[10px] text-[#9ca3af]/60 uppercase tracking-[0.2em] block mb-2">dictionary definition</span>
+              <p class="text-[#9ca3af] text-sm leading-relaxed italic">
+                /ʃɪft/ <span class="not-italic text-[#f5f2eb]">noun</span> — a slight change in position, direction, or tendency; a transfer from one place, position, or state to another.
+              </p>
+            </div>
           </div>
           
-          <div class="theme-card p-6 sm:p-8 rounded-2xl">
+          <!-- ECHOES -->
+          <div class="theme-card theme-echoes p-6 sm:p-8 rounded-2xl" data-theme="echoes">
+            <div class="echo-ripple">
+              <div class="echo-ring"></div>
+              <div class="echo-ring"></div>
+              <div class="echo-ring"></div>
+            </div>
+            <span class="echo-ghost" style="top: 2rem; left: 1.5rem; --echo-opacity: 0.3;">ECHOES</span>
+            <span class="echo-ghost" style="top: 2rem; left: 1.5rem; --echo-opacity: 0.15;">ECHOES</span>
+            <span class="echo-ghost" style="top: 2rem; left: 1.5rem; --echo-opacity: 0.08;">ECHOES</span>
             <span class="text-xs text-[#D4A537] uppercase tracking-widest mb-3 sm:mb-4 block">Theme 04</span>
-            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <h3 class="theme-title font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">ECHOES</h3>
             <div class="mt-4 sm:mt-6 h-px bg-gradient-to-r from-[#D4A537]/40 to-transparent"></div>
+            <div class="mt-4">
+              <span class="text-[10px] text-[#9ca3af]/60 uppercase tracking-[0.2em] block mb-2">dictionary definition</span>
+              <p class="text-[#9ca3af] text-sm leading-relaxed italic">
+                /ˈekō/ <span class="not-italic text-[#f5f2eb]">noun</span> — a sound caused by the reflection of sound waves from a surface back to the listener; a close parallel or repetition of an idea, feeling, or event.
+              </p>
+            </div>
           </div>
+          
         </div>
         
         <!-- philosophy note -->
@@ -325,32 +1037,143 @@
             <h2 class="font-display text-4xl sm:text-5xl md:text-7xl font-black glow-sky text-[#93C5FD]">WILDCARDS</h2>
           </div>
           <p class="text-[#9ca3af] max-w-md text-base sm:text-lg leading-relaxed">
-            Bonus challenges for the bold.<br>
-            <span class="text-[#f5f2eb] italic">Stack them. Combine them. Ignore them.</span>
+            Bonus challenges. More may be added through the event.
+            <span class="text-[#f5f2eb] italic">
+            Mix, twist, or totally ignore them — your move.</span>
           </p>
         </div>
         
         <!-- wildcard cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          <div class="wildcard-card p-6 sm:p-8 rounded-2xl">
-            <div class="flex items-start justify-between mb-3 sm:mb-4">
-              <span class="text-xs text-[#93C5FD] uppercase tracking-widest">Wildcard 01</span>
-              <span class="text-[#93C5FD] text-xl sm:text-2xl">✦</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">⚙</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Goldberg</h3>
             </div>
-            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
-            <p class="mt-3 sm:mt-4 text-[#9ca3af] text-sm">+Bonus points if incorporated</p>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">A single action must trigger multiple cascading effects.</p>
           </div>
           
-          <div class="wildcard-card p-6 sm:p-8 rounded-2xl">
-            <div class="flex items-start justify-between mb-3 sm:mb-4">
-              <span class="text-xs text-[#93C5FD] uppercase tracking-widest">Wildcard 02</span>
-              <span class="text-[#93C5FD] text-xl sm:text-2xl">✦</span>
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">🎲</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Randomness</h3>
             </div>
-            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
-            <p class="mt-3 sm:mt-4 text-[#9ca3af] text-sm">+Bonus points if incorporated</p>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Something in your project must unpredictably vary each time.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">📦</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Schrödinger</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">An element must exist in multiple possible, unknown states until interaction.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">🔁</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Déjà Vu</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">A moment or action must repeat, but with a twist.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">🧩</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Patchwork</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Combine several different pieces into one unified feature.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl sleeper-trigger" id="sleeper-card" onclick="awakeSleeper()">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">🕵</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Sleeper Agent</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Something must activate only under a specific or unusual condition.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">♾</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Ouroboros</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">A process or action must loop back to where it started.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">🔮</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Kaleidoscope</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">The same content/input must change depending on context.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">👻</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Ghost Note</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Include a subtle background behavior that affects something important.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl" id="tabula-rasa" onclick="tabulaRasa()">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">🗑</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Tabula Rasa</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Offer a way to reset or wipe something entirely.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">⏪</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Flashback</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Show or use a previous state/version to contrast with the current one.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">💊</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Time Capsule</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Store something early and reveal or use it later.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">🪞</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">L100</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">At least one element must have multiple meanings depending on how it's viewed.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">🚦</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Crossroads</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Include a moment where a choice meaningfully changes direction. Like turning left.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">📜</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Chronicle</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Record events and let the history itself influence the project.</p>
+          </div>
+          
+          <div class="wildcard-mini p-4 sm:p-5 rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[#93C5FD] text-sm">🌅</span>
+              <h3 class="wildcard-name font-display text-base sm:text-lg font-bold text-[#f5f2eb]">Foreshadow</h3>
+            </div>
+            <p class="text-[#9ca3af] text-xs leading-relaxed">Include something that only makes sense later.</p>
           </div>
         </div>
-      </div>
+        
     </section>
     
     <!-- submission section -->
@@ -418,5 +1241,338 @@
         </p>
       </div>
     </footer>
+    
+    <script>
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Randomness — random greeting that changes each visit
+      // ═══════════════════════════════════════════════════════════════════
+      const randomGreetings = [
+        "Anything goes. Seriously.",
+        "Build something weird.",
+        "Your only limit is time.",
+        "Make it strange. Make it yours.",
+        "What will you create?",
+        "Surprise us. Surprise yourself.",
+        "Ship something legendary."
+      ];
+      const kaleidoscopeEl = document.getElementById('kaleidoscope-anything');
+      const randomIndex = Math.floor(Math.random() * randomGreetings.length);
+      kaleidoscopeEl.textContent = randomGreetings[randomIndex];
+      
+      // Slight random blob drift (subtle)
+      document.querySelectorAll('.blob').forEach(blob => {
+        const randomX = (Math.random() - 0.5) * 40;
+        const randomY = (Math.random() - 0.5) * 40;
+        blob.style.transform = `translate(${randomX}px, ${randomY}px)`;
+      });
+
+      // ═══════════════════════════════════════════════════════════════════
+      // Countdown timer
+      // ═══════════════════════════════════════════════════════════════════
+      const deadline = new Date('December 3, 2025 23:59:59').getTime();
+      
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = deadline - now;
+        
+        if (distance < 0) {
+          document.getElementById('days').textContent = '0';
+          document.getElementById('hours').textContent = '0';
+          document.getElementById('minutes').textContent = '0';
+          document.getElementById('seconds').textContent = '0';
+          return;
+        }
+        
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        document.getElementById('days').textContent = days;
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+      }
+      
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Chronicle — track user interactions (stored, influences console)
+      // ═══════════════════════════════════════════════════════════════════
+      const chronicle = JSON.parse(localStorage.getItem('hackathon-chronicle') || '[]');
+      
+      function recordEvent(event) {
+        const entry = { event, time: Date.now() };
+        chronicle.push(entry);
+        if (chronicle.length > 100) chronicle.shift();
+        localStorage.setItem('hackathon-chronicle', JSON.stringify(chronicle));
+      }
+      
+      // Track theme card clicks for Chronicle
+      document.querySelectorAll('.theme-card').forEach(card => {
+        card.addEventListener('click', () => {
+          recordEvent(`theme-click-${card.dataset.theme}`);
+          triggerGoldbergCascade();
+        });
+      });
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Goldberg — single action triggers subtle cascading effects
+      // ═══════════════════════════════════════════════════════════════════
+      function triggerGoldbergCascade() {
+        // Effect 1: Gentle flash
+        const flash = document.getElementById('deja-vu-flash');
+        flash.style.background = 'rgba(212, 165, 55, 0.05)';
+        flash.classList.add('active');
+        
+        // Effect 2: Blobs gently pulse
+        setTimeout(() => {
+          document.querySelectorAll('.blob').forEach(blob => {
+            blob.style.transition = 'transform 0.6s ease-out';
+            blob.style.transform = 'scale(1.05)';
+            setTimeout(() => blob.style.transform = '', 600);
+          });
+        }, 100);
+        
+        // Effect 3: Theme cards subtle ripple
+        setTimeout(() => {
+          document.querySelectorAll('.theme-card').forEach((card, i) => {
+            setTimeout(() => {
+              card.style.transition = 'box-shadow 0.3s';
+              card.style.boxShadow = '0 0 25px rgba(212,165,55,0.1)';
+              setTimeout(() => card.style.boxShadow = '', 300);
+            }, i * 80);
+          });
+        }, 150);
+        
+        // Reset flash
+        setTimeout(() => {
+          flash.classList.remove('active');
+          flash.style.background = '';
+        }, 400);
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Crossroads — choice shows indicator briefly
+      // ═══════════════════════════════════════════════════════════════════
+      let chosenPath = localStorage.getItem('hackathon-path') || null;
+      
+      function choosePath(path, event) {
+        const previousPath = chosenPath;
+        chosenPath = path;
+        localStorage.setItem('hackathon-path', path);
+        
+        const indicator = document.getElementById('crossroads-indicator');
+        const pathName = document.getElementById('path-name');
+        
+        pathName.textContent = path;
+        indicator.classList.add('visible');
+        setTimeout(() => indicator.classList.remove('visible'), 2000);
+        
+        recordEvent(`crossroads-chose-${path}`);
+        
+        // WILDCARD: Déjà Vu — same choice twice triggers subtle effect
+        if (previousPath === path) {
+          triggerDejaVu();
+        }
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Schrödinger — countdown has tiny random "glitch" rarely
+      // ═══════════════════════════════════════════════════════════════════
+      setInterval(() => {
+        if (Math.random() > 0.995) { // Very rare
+          const seconds = document.getElementById('seconds');
+          const original = seconds.textContent;
+          seconds.style.opacity = '0.5';
+          setTimeout(() => {
+            seconds.style.opacity = '1';
+          }, 80);
+        }
+      }, 1000);
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Déjà Vu — subtle flash when repeating an action
+      // ═══════════════════════════════════════════════════════════════════
+      function triggerDejaVu() {
+        const flash = document.getElementById('deja-vu-flash');
+        flash.classList.add('active');
+        
+        const indicator = document.getElementById('crossroads-indicator');
+        document.getElementById('path-name').textContent = 'déjà vu...';
+        indicator.classList.add('visible');
+        
+        setTimeout(() => {
+          flash.classList.remove('active');
+          indicator.classList.remove('visible');
+        }, 600);
+        
+        recordEvent('deja-vu');
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Time Capsule — store first visit data silently
+      // ═══════════════════════════════════════════════════════════════════
+      let timeCapsule = JSON.parse(localStorage.getItem('hackathon-time-capsule') || 'null');
+      
+      if (!timeCapsule) {
+        timeCapsule = {
+          firstVisit: Date.now(),
+          firstGreeting: randomGreetings[randomIndex],
+          screenSize: `${window.innerWidth}x${window.innerHeight}`
+        };
+        localStorage.setItem('hackathon-time-capsule', JSON.stringify(timeCapsule));
+      }
+      
+      // WILDCARD: Flashback — log previous state to console
+      const visits = parseInt(localStorage.getItem('hackathon-visits') || '0') + 1;
+      localStorage.setItem('hackathon-visits', visits);
+      
+      if (visits > 1 && timeCapsule) {
+        const daysSince = Math.floor((Date.now() - timeCapsule.firstVisit) / (1000 * 60 * 60 * 24));
+        console.log(`%c📖 Visit #${visits}`, 'color: #D4A537');
+        if (daysSince >= 1) {
+          console.log(`%c🕰️ First visit: ${daysSince} day(s) ago`, 'color: #9ca3af');
+        }
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Sleeper Agent — activates on 5 clicks (subtle glow only)
+      // ═══════════════════════════════════════════════════════════════════
+      let sleeperClicks = 0;
+      
+      function awakeSleeper() {
+        sleeperClicks++;
+        const card = document.getElementById('sleeper-card');
+        
+        // Progressive hints
+        if (sleeperClicks === 3) {
+          card.style.borderColor = 'rgba(212,165,55,0.25)';
+        }
+        if (sleeperClicks === 4) {
+          card.style.borderColor = 'rgba(212,165,55,0.4)';
+        }
+        
+        // Awaken at 5 - just add a glow and emoji, keep text readable
+        if (sleeperClicks === 5) {
+          card.style.borderColor = 'var(--gold)';
+          card.style.boxShadow = '0 0 20px rgba(212,165,55,0.15)';
+          card.querySelector('.wildcard-name').textContent = '🌟 Sleeper Agent';
+          recordEvent('sleeper-awakened');
+          triggerGoldbergCascade();
+        }
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Tabula Rasa — reset all stored data
+      // ═══════════════════════════════════════════════════════════════════
+      function tabulaRasa() {
+        if (confirm('Reset all stored data?\n\nThis clears your visit history, path choices, and exploration progress.')) {
+          document.body.style.transition = 'opacity 0.5s';
+          document.body.style.opacity = '0';
+          
+          setTimeout(() => {
+            localStorage.removeItem('hackathon-chronicle');
+            localStorage.removeItem('hackathon-time-capsule');
+            localStorage.removeItem('hackathon-visits');
+            localStorage.removeItem('hackathon-path');
+            localStorage.removeItem('hackathon-explored-themes');
+            localStorage.removeItem('hackathon-ouroboros');
+            location.reload();
+          }, 500);
+        }
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Ouroboros — scroll to bottom then top shows a brief indicator
+      // ═══════════════════════════════════════════════════════════════════
+      let scrolledToBottom = false;
+      let ouroborosCount = parseInt(localStorage.getItem('hackathon-ouroboros') || '0');
+      
+      window.addEventListener('scroll', () => {
+        const scrollPos = window.scrollY + window.innerHeight;
+        const docHeight = document.documentElement.scrollHeight;
+        
+        if (scrollPos >= docHeight - 50) {
+          scrolledToBottom = true;
+        }
+        
+        if (scrolledToBottom && window.scrollY < 50) {
+          scrolledToBottom = false;
+          ouroborosCount++;
+          localStorage.setItem('hackathon-ouroboros', ouroborosCount);
+          recordEvent(`ouroboros-${ouroborosCount}`);
+          
+          // Brief indicator
+          const indicator = document.getElementById('crossroads-indicator');
+          indicator.querySelector('#crossroads-text').innerHTML = 
+            `<span id="path-name">♾️ loop ${ouroborosCount}</span>`;
+          indicator.classList.add('visible');
+          
+          setTimeout(() => indicator.classList.remove('visible'), 1500);
+        }
+      });
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Patchwork — clicking all 4 themes logs a message
+      // ═══════════════════════════════════════════════════════════════════
+      const exploredThemes = new Set(JSON.parse(localStorage.getItem('hackathon-explored-themes') || '[]'));
+      
+      document.querySelectorAll('.theme-card').forEach(card => {
+        card.addEventListener('click', () => {
+          exploredThemes.add(card.dataset.theme);
+          localStorage.setItem('hackathon-explored-themes', JSON.stringify([...exploredThemes]));
+          
+          if (exploredThemes.size === 4 && !localStorage.getItem('hackathon-patchwork-done')) {
+            localStorage.setItem('hackathon-patchwork-done', 'true');
+            console.log('%c🧩 Patchwork complete! All four themes explored.', 'color: #D4A537; font-weight: bold;');
+            recordEvent('patchwork-complete');
+          }
+        });
+      });
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: L100 — "HACKATHON" title tooltip on hover
+      // ═══════════════════════════════════════════════════════════════════
+      const hackathonTitle = document.querySelector('h1 .glow-gold');
+      if (hackathonTitle) {
+        hackathonTitle.title = 'hack (v.) + marathon';
+        hackathonTitle.style.cursor = 'help';
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Kaleidoscope — greeting text changes based on context
+      // Already implemented via randomGreetings above
+      // Additional: slight console message based on time
+      // ═══════════════════════════════════════════════════════════════════
+      const hour = new Date().getHours();
+      if (hour >= 0 && hour < 6) {
+        console.log('%c🌙 Late night hacking?', 'color: #93C5FD');
+      } else if (hour >= 22) {
+        console.log('%c🌙 Night owl mode', 'color: #93C5FD');
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Foreshadow — cryptic console hints
+      // ═══════════════════════════════════════════════════════════════════
+      console.log('%c🔮 The sleeper awaits 5 knocks...', 'color: #D4A537; font-style: italic;');
+      console.log('%c🔮 Journey to the end, then return...', 'color: #93C5FD; font-style: italic;');
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // WILDCARD: Ghost Note — subtle background tracking (console only)
+      // ═══════════════════════════════════════════════════════════════════
+      let interactionCount = 0;
+      document.addEventListener('click', () => {
+        interactionCount++;
+        if (interactionCount === 50) {
+          console.log('%c👻 Ghost note: 50 interactions recorded', 'color: #9ca3af; font-style: italic;');
+        }
+      });
+      
+      // Record page view
+      recordEvent('page-view');
+    </script>
   </body>
 </html>
+
