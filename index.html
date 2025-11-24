@@ -3,9 +3,420 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanksgiving 2025 Hackathon</title>
+    <title>Thanksgiving 2025 Hackathon | Cypress Ranch CS Club</title>
+    <link rel="icon" type="image/png" href="https://bettercs.club/images/logo.webp">
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --gold: #D4A537;
+        --gold-light: #F5C542;
+        --sky: #93C5FD;
+        --sky-light: #BFDBFE;
+        --ink: #0f1419;
+        --cream: #f5f2eb;
+        --mist: #9ca3af;
+      }
+      
+      * { box-sizing: border-box; }
+      
+      html { scroll-behavior: smooth; }
+      
+      body {
+        font-family: 'Space Mono', monospace;
+        background-color: var(--ink);
+        color: var(--cream);
+        margin: 0;
+        overflow-x: hidden;
+      }
+      
+      .font-display { font-family: 'Unbounded', sans-serif; }
+      
+      /* subtle grain overlay */
+      .grain::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.02;
+        pointer-events: none;
+        z-index: 1000;
+      }
+      
+      /* glowing text */
+      .glow-gold {
+        text-shadow: 0 0 40px var(--gold), 0 0 80px rgba(212, 165, 55, 0.4);
+      }
+      
+      .glow-sky {
+        text-shadow: 0 0 40px var(--sky), 0 0 80px rgba(147, 197, 253, 0.4);
+      }
+      
+      /* floating animation */
+      @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-12px) rotate(1deg); }
+      }
+      
+      @keyframes float-reverse {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(12px) rotate(-1deg); }
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.5; }
+      }
+      
+      .float { animation: float 6s ease-in-out infinite; }
+      .float-delay { animation: float 6s ease-in-out infinite 2s; }
+      .float-reverse { animation: float-reverse 7s ease-in-out infinite 1s; }
+      
+      /* gradient blob */
+      .blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.25;
+        animation: pulse 10s ease-in-out infinite;
+      }
+      
+      /* theme cards */
+      .theme-card {
+        background: linear-gradient(135deg, rgba(212,165,55,0.08) 0%, rgba(147,197,253,0.04) 100%);
+        border: 1px solid rgba(212,165,55,0.2);
+        backdrop-filter: blur(10px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .theme-card:hover {
+        border-color: var(--gold);
+        box-shadow: 0 0 30px rgba(212,165,55,0.15);
+        transform: translateY(-4px);
+      }
+      
+      .wildcard-card {
+        background: linear-gradient(135deg, rgba(147,197,253,0.08) 0%, rgba(212,165,55,0.04) 100%);
+        border: 1px solid rgba(147,197,253,0.2);
+        backdrop-filter: blur(10px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .wildcard-card:hover {
+        border-color: var(--sky);
+        box-shadow: 0 0 30px rgba(147,197,253,0.15);
+        transform: translateY(-4px);
+      }
+      
+      /* custom scrollbar */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: var(--ink); }
+      ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+    </style>
   </head>
-  <body>
-    <p>What's up! This is the main page for the Thanksgiving 2025 Hackathon! Rules, criteria, and <b>project pages</b> will be on here. Currently in development, but will be out soon!</p>
+  
+  <body class="grain">
+    <!-- ambient blobs -->
+    <div class="blob w-64 h-64 sm:w-96 sm:h-96 bg-[#D4A537] top-20 -left-32 sm:-left-48" style="position: fixed;"></div>
+    <div class="blob w-48 h-48 sm:w-80 sm:h-80 bg-[#93C5FD] bottom-20 -right-24 sm:-right-40" style="position: fixed;"></div>
+    
+    <!-- hero -->
+    <section class="min-h-screen flex flex-col justify-center items-center relative px-6 py-20">
+      <div class="absolute top-6 left-6 md:top-8 md:left-8 flex items-center gap-3">
+        <img src="https://bettercs.club/images/logo.webp" alt="Cypress Ranch CS Club Logo" class="w-8 h-8 md:w-10 md:h-10">
+        <span class="text-xs uppercase tracking-[0.15em] md:tracking-[0.2em] text-[#9ca3af] hidden sm:inline">Cypress Ranch CS Club</span>
+      </div>
+      
+      <div class="text-center max-w-5xl relative z-10">
+        <p class="text-[#D4A537] text-sm uppercase tracking-[0.5em] mb-6">November 2025</p>
+        
+        <h1 class="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[0.95] mb-8">
+          <span class="block">THANKSGIVING</span>
+          <span class="block glow-gold text-[#D4A537]">HACKATHON</span>
+        </h1>
+        
+        <p class="text-lg sm:text-xl md:text-2xl text-[#9ca3af] max-w-2xl mx-auto leading-relaxed mb-10 md:mb-12">
+          A week to build something you're proud of.<br>
+          <span class="text-[#f5f2eb]">Anything goes. Seriously.</span>
+        </p>
+        
+        <div class="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+          <a href="#themes" class="px-5 py-3 bg-[#D4A537] text-[#0f1419] hover:bg-[#F5C542] transition-colors rounded-lg text-sm font-bold uppercase tracking-wide">
+            Themes
+          </a>
+          <a href="#wildcards" class="px-5 py-3 bg-[#93C5FD] text-[#0f1419] hover:bg-[#BFDBFE] transition-colors rounded-lg text-sm font-bold uppercase tracking-wide">
+            Wildcards
+          </a>
+          <a href="#submit" class="px-5 py-3 border border-[#f5f2eb]/30 text-[#f5f2eb] hover:bg-[#f5f2eb]/10 transition-colors rounded-lg text-sm font-medium">
+            How to Submit
+          </a>
+        </div>
+      </div>
+      
+      <!-- scroll indicator - hidden on mobile -->
+      <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-[#9ca3af] hidden sm:flex">
+        <span class="text-xs uppercase tracking-widest">Scroll</span>
+        <div class="w-px h-16 bg-gradient-to-b from-[#9ca3af] to-transparent"></div>
+      </div>
+    </section>
+    
+    <!-- countdown section -->
+    <section class="py-12 md:py-16 px-6 bg-gradient-to-b from-[#0f1419] via-[#D4A537]/5 to-[#0f1419] border-y border-[#D4A537]/20">
+      <div class="max-w-4xl mx-auto text-center">
+        <p class="text-[#D4A537] text-sm uppercase tracking-[0.3em] mb-4">Submissions Due</p>
+        <p class="font-display text-3xl sm:text-4xl md:text-5xl font-black text-[#f5f2eb] mb-6">December 3rd, 2025</p>
+        
+        <!-- countdown timer -->
+        <div id="countdown" class="flex justify-center gap-3 sm:gap-6 mb-6">
+          <div class="text-center">
+            <div class="font-display text-3xl sm:text-5xl md:text-6xl font-black text-[#D4A537]" id="days">--</div>
+            <div class="text-xs sm:text-sm text-[#9ca3af] uppercase tracking-wider mt-1">Days</div>
+          </div>
+          <div class="text-2xl sm:text-4xl text-[#D4A537]/40 font-light self-start mt-2">:</div>
+          <div class="text-center">
+            <div class="font-display text-3xl sm:text-5xl md:text-6xl font-black text-[#D4A537]" id="hours">--</div>
+            <div class="text-xs sm:text-sm text-[#9ca3af] uppercase tracking-wider mt-1">Hours</div>
+          </div>
+          <div class="text-2xl sm:text-4xl text-[#D4A537]/40 font-light self-start mt-2">:</div>
+          <div class="text-center">
+            <div class="font-display text-3xl sm:text-5xl md:text-6xl font-black text-[#D4A537]" id="minutes">--</div>
+            <div class="text-xs sm:text-sm text-[#9ca3af] uppercase tracking-wider mt-1">Min</div>
+          </div>
+          <div class="text-2xl sm:text-4xl text-[#D4A537]/40 font-light self-start mt-2">:</div>
+          <div class="text-center">
+            <div class="font-display text-3xl sm:text-5xl md:text-6xl font-black text-[#D4A537]" id="seconds">--</div>
+            <div class="text-xs sm:text-sm text-[#9ca3af] uppercase tracking-wider mt-1">Sec</div>
+          </div>
+        </div>
+        
+        <p class="text-[#9ca3af] text-sm">Extensions may be granted depending on the number of submissions.</p>
+      </div>
+    </section>
+    
+    <script>
+      // Countdown timer
+      const deadline = new Date('December 3, 2025 23:59:59').getTime();
+      
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = deadline - now;
+        
+        if (distance < 0) {
+          document.getElementById('days').textContent = '0';
+          document.getElementById('hours').textContent = '0';
+          document.getElementById('minutes').textContent = '0';
+          document.getElementById('seconds').textContent = '0';
+          return;
+        }
+        
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        document.getElementById('days').textContent = days;
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+      }
+      
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    </script>
+    
+    <!-- about section -->
+    <section id="about" class="py-20 md:py-32 px-6 relative border-t border-[#f5f2eb]/5">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12 md:mb-16">
+          <p class="text-[#93C5FD] text-sm uppercase tracking-[0.3em] mb-4">What is this?</p>
+          <h2 class="font-display text-3xl sm:text-4xl md:text-6xl font-black mb-6 md:mb-8">ANYTHING GOES</h2>
+        </div>
+        
+        <div class="prose prose-invert max-w-none text-[#9ca3af] text-base sm:text-lg leading-relaxed space-y-4 sm:space-y-6">
+          <p>
+            This is an <span class="text-[#f5f2eb] font-bold">open hackathon</span>. If it's software, you can submit it. 
+            Games, websites, apps, scripts, tools, art made with code: all fair game.
+          </p>
+          <p>
+            Work solo or form a team. Use whatever languages, frameworks, or tools you want. 
+            Start from scratch or build on something you've been tinkering with (though you should do 98% of the work during the hackathon).
+            <span class="text-[#D4A537]">The only rule is to ship something by the deadline.</span>
+          </p>
+        </div>
+        
+        <!-- judging info -->
+        <div class="mt-12 md:mt-16 p-6 sm:p-8 bg-[#93C5FD]/5 border border-[#93C5FD]/20 rounded-2xl">
+          <h3 class="font-display text-xl font-bold text-[#93C5FD] mb-4">How Judging Works</h3>
+          <p class="text-[#9ca3af] leading-relaxed">
+            Winners are decided by <span class="text-[#f5f2eb]">popular vote</span> across multiple categories and criteria (like creativity, technical difficulty, time spent, etc.). 
+            Categories will be announced closer to the end, but expect things like best design, most creative, best use of theme, and more.
+          </p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- themes section -->
+    <section id="themes" class="py-20 md:py-32 px-6 relative">
+      <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 mb-12 md:mb-16">
+          <div>
+            <p class="text-[#D4A537] text-sm uppercase tracking-[0.3em] mb-4">01 — Themes</p>
+            <h2 class="font-display text-4xl sm:text-5xl md:text-7xl font-black">THEMES</h2>
+          </div>
+          <p class="text-[#9ca3af] max-w-md text-base sm:text-lg leading-relaxed">
+            One word. Infinite interpretations.<br>
+            <span class="text-[#f5f2eb] italic">If you can defend it, you can use it.</span>
+          </p>
+        </div>
+        
+        <!-- mix and match note -->
+        <div class="mb-8 md:mb-12 p-4 sm:p-6 bg-[#D4A537]/5 border border-[#D4A537]/20 rounded-xl">
+          <p class="text-[#D4A537] text-sm">
+            <span class="font-bold">Mix & match:</span> Use one theme, combine all four, or anything in between. Your call.
+          </p>
+        </div>
+        
+        <!-- theme cards grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div class="theme-card p-6 sm:p-8 rounded-2xl">
+            <span class="text-xs text-[#D4A537] uppercase tracking-widest mb-3 sm:mb-4 block">Theme 01</span>
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <div class="mt-4 sm:mt-6 h-px bg-gradient-to-r from-[#D4A537]/40 to-transparent"></div>
+          </div>
+          
+          <div class="theme-card p-6 sm:p-8 rounded-2xl">
+            <span class="text-xs text-[#D4A537] uppercase tracking-widest mb-3 sm:mb-4 block">Theme 02</span>
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <div class="mt-4 sm:mt-6 h-px bg-gradient-to-r from-[#D4A537]/40 to-transparent"></div>
+          </div>
+          
+          <div class="theme-card p-6 sm:p-8 rounded-2xl">
+            <span class="text-xs text-[#D4A537] uppercase tracking-widest mb-3 sm:mb-4 block">Theme 03</span>
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <div class="mt-4 sm:mt-6 h-px bg-gradient-to-r from-[#D4A537]/40 to-transparent"></div>
+          </div>
+          
+          <div class="theme-card p-6 sm:p-8 rounded-2xl">
+            <span class="text-xs text-[#D4A537] uppercase tracking-widest mb-3 sm:mb-4 block">Theme 04</span>
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <div class="mt-4 sm:mt-6 h-px bg-gradient-to-r from-[#D4A537]/40 to-transparent"></div>
+          </div>
+        </div>
+        
+        <!-- philosophy note -->
+        <div class="mt-12 md:mt-20 border-l-2 border-[#D4A537]/40 pl-6 sm:pl-8 max-w-2xl">
+          <p class="text-[#9ca3af] text-base sm:text-lg italic leading-relaxed">
+            "We don't define what these mean. <span class="text-[#f5f2eb]">You do.</span> 
+            A theme about 'light' could be photography, physics, spirituality, or featherweight boxing. 
+            Make it yours."
+          </p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- wildcards section - flows from themes -->
+    <section id="wildcards" class="py-20 md:py-32 px-6 relative">
+      <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 mb-12 md:mb-20">
+          <div>
+            <p class="text-[#93C5FD] text-sm uppercase tracking-[0.3em] mb-4">02 — Optional Wildcards</p>
+            <h2 class="font-display text-4xl sm:text-5xl md:text-7xl font-black glow-sky text-[#93C5FD]">WILDCARDS</h2>
+          </div>
+          <p class="text-[#9ca3af] max-w-md text-base sm:text-lg leading-relaxed">
+            Bonus challenges for the bold.<br>
+            <span class="text-[#f5f2eb] italic">Stack them. Combine them. Ignore them.</span>
+          </p>
+        </div>
+        
+        <!-- wildcard cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div class="wildcard-card p-6 sm:p-8 rounded-2xl">
+            <div class="flex items-start justify-between mb-3 sm:mb-4">
+              <span class="text-xs text-[#93C5FD] uppercase tracking-widest">Wildcard 01</span>
+              <span class="text-[#93C5FD] text-xl sm:text-2xl">✦</span>
+            </div>
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <p class="mt-3 sm:mt-4 text-[#9ca3af] text-sm">+Bonus points if incorporated</p>
+          </div>
+          
+          <div class="wildcard-card p-6 sm:p-8 rounded-2xl">
+            <div class="flex items-start justify-between mb-3 sm:mb-4">
+              <span class="text-xs text-[#93C5FD] uppercase tracking-widest">Wildcard 02</span>
+              <span class="text-[#93C5FD] text-xl sm:text-2xl">✦</span>
+            </div>
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-[#f5f2eb]">[TBD]</h3>
+            <p class="mt-3 sm:mt-4 text-[#9ca3af] text-sm">+Bonus points if incorporated</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- submission section -->
+    <section id="submit" class="py-20 md:py-32 px-6 bg-gradient-to-b from-transparent via-[#D4A537]/5 to-transparent">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12 md:mb-16">
+          <p class="text-[#D4A537] text-sm uppercase tracking-[0.3em] mb-4">03 — Ship It</p>
+          <h2 class="font-display text-4xl sm:text-5xl md:text-7xl font-black mb-4 md:mb-6">HOW TO SUBMIT</h2>
+          <p class="text-[#9ca3af] text-lg sm:text-xl">When you're ready to show the world.</p>
+        </div>
+        
+        <div class="space-y-4 sm:space-y-8">
+          <!-- submission steps -->
+          <div class="bg-[#0f1419]/80 border border-[#D4A537]/20 rounded-2xl p-5 sm:p-8 backdrop-blur-sm">
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-6">
+              <span class="font-display text-3xl sm:text-5xl font-black text-[#D4A537]/30">01</span>
+              <div>
+                <h3 class="font-display text-lg sm:text-xl font-bold text-[#f5f2eb] mb-2">Build Your Project</h3>
+                <p class="text-[#9ca3af] text-sm sm:text-base">Code, design, create. Use any tools, any language. Solo or team—your call.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-[#0f1419]/80 border border-[#D4A537]/20 rounded-2xl p-5 sm:p-8 backdrop-blur-sm">
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-6">
+              <span class="font-display text-3xl sm:text-5xl font-black text-[#D4A537]/30">02</span>
+              <div>
+                <h3 class="font-display text-lg sm:text-xl font-bold text-[#f5f2eb] mb-2">Create a Project Page</h3>
+                <p class="text-[#9ca3af] text-sm sm:text-base">Make a simple webpage showcasing your project. What it does, how it works, and a link or demo. Templates will be provided to get you started.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-[#0f1419]/80 border border-[#D4A537]/20 rounded-2xl p-5 sm:p-8 backdrop-blur-sm">
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-6">
+              <span class="font-display text-3xl sm:text-5xl font-black text-[#D4A537]/30">03</span>
+              <div>
+                <h3 class="font-display text-lg sm:text-xl font-bold text-[#f5f2eb] mb-2">Submit to the Repo</h3>
+                <p class="text-[#9ca3af] text-sm sm:text-base">Add your project page to the shared git repository. You can keep editing and improving until the deadline hits.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- footer -->
+    <footer class="py-12 md:py-16 px-6 border-t border-[#f5f2eb]/10">
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8">
+        <div class="flex items-center gap-3 sm:gap-4">
+          <img src="https://bettercs.club/images/logo.webp" alt="Cypress Ranch CS Club Logo" class="w-10 h-10 sm:w-12 sm:h-12">
+          <p class="font-display font-bold text-lg sm:text-xl">Cypress Ranch CS Club</p>
+        </div>
+        
+        <div class="flex gap-6 sm:gap-8 text-sm text-[#9ca3af]">
+          <a href="https://discord.bettercs.club" class="hover:text-[#D4A537] transition-colors">Discord</a>
+          <a href="https://github.com/cyranch-csclub" class="hover:text-[#D4A537] transition-colors">GitHub</a>
+          <a href="https://bettercs.club" class="hover:text-[#D4A537] transition-colors">Home</a>
+        </div>
+      </div>
+      
+      <div class="max-w-6xl mx-auto mt-8 md:mt-12 pt-6 md:pt-8 border-t border-[#f5f2eb]/5 text-center">
+        <p class="text-[#9ca3af]/50 text-xs">
+          Thanksgiving Hackathon 2025
+        </p>
+      </div>
+    </footer>
   </body>
 </html>
